@@ -4,18 +4,17 @@
 
 using namespace std; 
 
-node::node(int data) {
-    node* left = NULL;
-    node* right = NULL;
+node::node(int value) {
+    left = NULL;
+    right = NULL;
     data = value;    
 }
 node::~node() {
-    delete node;
     
 }
 
-void node::setRight(node* newnext) {
-    right = newnext;
+void node::setRight(node* newright) {
+    right = newright;
     
 }
 
@@ -23,8 +22,8 @@ node* node::getRight(){
     return right;
     
 }
-void node::setLeft(node* newnext) {
-    left = newnext;
+void node::setLeft(node* newleft) {
+    left = newleft;
     
 }
 
@@ -33,11 +32,11 @@ node* node::getLeft(){
     
 }
 
-void node::setValue(int valuetwo) {
-    value = valuetwo; 
+void node::setValue(int value) {
+    data = value; 
 }
 
-node* node::getValue() {
-    return value; 
+int node::getValue() {
+    return data; 
     
 }

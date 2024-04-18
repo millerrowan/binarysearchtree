@@ -1,12 +1,17 @@
 #include <iostream>
 #include <cstring>
+#include <fstream>
 #include "node.h"
 
 using namespace std; 
 
+/* This is a binary search tree that you can add, remove, print, and search from
+Author: Rowan Miller
+04/18/24 */
+
 void add(node* &root, int data);
 void print(node* root, int count);
-void remove(node* root, int n);
+void remove(node* &root, node* current, node* parent, int n);
 bool search(int search, node* root);
 
 
@@ -16,8 +21,9 @@ int main()
   int mannum;
   int numcounter = 0;
   node* root = NULL;
-  int search;
+  int searched;
   int n;
+  char input[30];
 
   
   while(stillPlaying == true) {
@@ -52,20 +58,26 @@ int main()
     }
 
     if(strcmp(input, "PRINT")==0) {
-        print(root, count);
+        print(root, 0);
 
     }
     
     if(strcmp(input, "DELETE")==0) {
         cout << "what number would you like to delete?" << endl; 
         cin >> n; 
-        remove(root, n);
+        remove(root, root, root, n);
     }
     if(strcmp(input, "SEARCH")==0) {
         
       cout << "what number are you searching for?" << endl;
-      cin >> search;
-      search(search, root);
+      cin >> searched;
+      bool inTree = search(searched, root);
+      if(inTree == false) {
+          cout << "your number is not in the tree" << endl;
+      }
+      else if(inTree == true) {
+          cout << "your number is in the tree" << endl;
+      } 
       
     }
     if(strcmp(input, "QUIT")==0) {
@@ -82,14 +94,28 @@ void add(node* &root, int data) {
     if(root == NULL) {
         root = new node(data); 
         root->setLeft(NULL);
-        root->setRight(NULL;
+        root->setRight(NULL);
         return;
     }
     if(root->getValue() > data) {
-        root->setLeft(add(root->getLeft(), data))
+        cout << "you are in left section" << endl;
+        if(root->getLeft() == NULL) {
+            root->setLeft(new node(data)); 
+        }
+        else {
+            node* left = root->getLeft();
+            add(left, data);
+        }
     }
     else{
-        root->setRight(add(root->getRight(), data)); 
+        cout << "you are in right section" << endl;
+        if(root->getRight() == NULL) {
+             root->setRight(new node(data));
+        }
+        else{
+        node* right = root->getRight(); 
+            add(right, data); 
+        }
     }
     return;  
     
@@ -101,73 +127,66 @@ void print(node* root, int count)  {
         return;
     }
     //if left child exists
-    if(root->getLeft != NULL) {
+    if(root->getRight() != NULL) {
         //calls print function but passes in left child
-        print(root->getLeft(), count+1)
+        print(root->getRight(), count+1);
     }
     for(int a = 0; a < count; a++) {
         cout << "\t";
     }
     cout << root->getValue() << endl; 
     //if right child exists
-    if(root->getRight != NULL) {
+    if(root->getLeft() != NULL) {
         //calls print function but passes in right child
-        print(root->getRight(), count+1); 
+        print(root->getLeft(), count+1); 
     }
     
 } 
 
-void remove(node* root, int n) {
+void remove(node* &root, node* current, node* parent, int n) {
     if(root == NULL) {
         cout << "tree is empty" << endl;
         return;
     }
-    if(search(n, root) == false) {
+   /* if(search(n, root) == false) {
         cout << "this number is not in the tree" << endl;
         return;
-    }
-    if(current->getValue == n) {
-        
+    } */ 
+    cout << "test " << endl;
+    if(current->getValue() == n) {
+        cout << "test2" << endl;
         //case 1: if the node is a leaf
         if(current->getRight()==NULL && current->getLeft() == NULL) {
             //now you need to check where the node is located
-            
+            cout << "current: " << current << endl;
             //if the node is a root
             if(root->getValue()==n){
+                cout << "root" << endl;
                 root = NULL;
             }
             //if node is a right child
             if(current->getValue() > parent->getValue()) {
                 parent->setRight(NULL); 
-                return;
             }
             //if node is a left child
             if(current->getValue() < parent->getValue()) {
                 parent->setLeft(NULL);
-                return; 
             }
             return;
         }
         //case 2: if the node has one child
-        //if node has a right child
-        if(current->getRight() != NULL && current->getLeft() == NULL) {
-            node* temp = current;
-            delete current;
-            current = temp; 
-            return;
-        }
         //if node has a left child
         if(current->getRight() == NULL && current->getLeft() != NULL) {
             //if current is a left child 
             if(current->getValue() < parent->getValue()) {
                 node* temp = current->getLeft();
-                 parent->setLeft(current->getLeft());
+                 parent->setLeft(temp);
                  delete current; 
             }
             //if current is a right child
             if(current->getValue() > parent->getValue()) {
                 node* temp = current->getLeft();
-                parent->setRight(current->getLeft());
+                parent->setRight(temp);
                 delete current;
             }
     
@@ -188,16 +207,12 @@ void remove(node* root, int n) {
                 parent->setRight(temp);
                 delete current;
             }
-    
-
             return; 
         }
             
-        return;
-        }
         //case 3: if the node has two children
         if(current->getRight() != NULL && current->getLeft() != NULL) {
-            node* temp = current->getLeft();
+            node* temp = current->getRight();
             node* temptwo = current;
             while(temp->getLeft() != NULL) {
                 temptwo = temp;
@@ -210,35 +225,50 @@ void remove(node* root, int n) {
                 temptwo->setRight(temp->getRight());
                 
             }
-            current->setValue(s->getValue());
-            delete s;
+            current->setValue(temp->getValue());
+            delete temp;
             return;
             
         }
         
+    } 
+    //recursive cases
+    //move to right
+    if(current->getValue() < n) {
+        cout << "moving to right" << endl;
+        remove(root, current->getRight(), current, n);
+    
     }
-   
+    //move to left
+    else if(current->getValue() > n) {
+        cout << "moving to left" << endl;
+        remove(root, current->getLeft(), current, n);
+    }
 }
 
+
+
 //checks if number is in tree
-bool search(int search, node* root) {
+bool search(int searched, node* root) {
     //if root doesnt exist
     if(root == NULL) {
         return false; 
     }
     //if root equals the value searched
-    if(root->getValue == search) {
+    if(root->getValue() == searched) {
         return true; 
     }
     //if root value is less than search value
-    if(root->getValue < search) {
+    if(root->getValue() > searched) {
         //call search again but pass in left child
-        return(search(search, node->getLeft()));
+        node* left = root->getLeft();
+        return(search(searched, left));
     }
     //if root value is greater than search value
-    if(root->getValue > search) {
+    if(root->getValue() < searched) {
         //call search again but pass in right child
-        return(search(search, node->getRight())); 
+        node* right = root->getRight();
+        return(search(searched, right)); 
     }
     
 }

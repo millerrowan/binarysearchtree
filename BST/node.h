@@ -9,14 +9,19 @@ class node {
     public: 
     node(int data);
     ~node();
-    void setNext(node* newnext);
-    node* getNext();
+    void setRight(node* newnext);
+    node* getRight();
+    void setLeft(node* newnext);
+    node* getLeft(); 
     void setValue(int valuetwo);
-    node* getValue();
+    int getValue();
     
     private:
     int data;
-    node* newnext;
+    node* newleft;
+    node* newright;
+    node* right;
+    node* left;
     
 };
 
